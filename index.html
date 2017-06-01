@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>FP with JS</title>
+<!-- 
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab"> -->
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h2>Functional Programming with JavaScript</h2>
+					<h3>Overview and features</h3>
+					<p>
+						<small>Created by <a href="#">Elizabeth Dolgaya</a></small>
+					</p>
+				</section>
+				<section>
+					<h4>What is it all about?</h4>
+					<img src="./intro.jpg">
+					
+				</section>
+				<section>
+					<h4>The FP Challenges:</h4>
+					<ul>
+						<li class="fragment">if-else condition (“Either” Monad)</li>
+						<li class="fragment">Null Exceptions (“Maybe” Monad)</li>
+						<li class="fragment">reusable functions (Pure functions, referential transparency)</li>
+						<li class="fragment">unchanged data (Pure functions, immutability)</li>
+						<li class="fragment">multiple values (“currying” and “higher-order functions”)</li>
+						<p class="fragment">...and more.</p>
+					</ul>
+				</section>
+				<section>
+					<section>
+					<h2>The FP Concepts:</h2>
+					<img src="./concepts.png">
+					</section>
+					<section>
+						<h2>Pure functions vs Shared state</h2>
+						<div   class="fragment" >
+							<ul>
+							<p class="fragment" > 
+							
+								<li class="fragment">Same input always returns same output</li>
+						<li class="fragment">No side effects</li>
+							</p>
+							
+						</ul>
+						</div>
+					</section>
+					<section>
+						<h2>Side Effects</h2>
+							<ul>
+								<li>Modifying any external variable or object property</li>
+								<li>Logging to the console</li>
+								<li>Writing to the screen</li>
+								<li>Writing to a file</li>
+								<li>Writing to the network</li>
+								<li>Triggering any external process</li>
+								<li>Calling any other functions with side-effects</li>
+							</ul>
+													<img src="side-effect.png">
+
+					</section>
+					<section>
+						<h2>First class and higher order functions</h2>
+						<ul>
+
+							<li>
+								Abstract or isolate actions, effects, or async flow control using callback functions, promises, monads, etc…</li><li>
+Create utilities which can act on a wide variety of data types</li><li>
+Partially apply a function to its arguments or create a curried function for the purpose of reuse or function composition</li><li>
+Take a list of functions and return some composition of those input functions
+							</li>
+						</ul>
+					</section>
+				</section>
+					<section>
+					<h2>So what about JS?</h2>
+					<img class="fragment" src="./map.jpg">
+				</section>
+				<section>
+			
+				<section>
+					<h2>Fantasy Land</h2>
+					<img src="./dependencies.png">
+				</section>
+				<section>
+					<h2>FL implementations:</h2>
+					<ul>
+							<li><a href="https://cwmyers.github.io/monet.js/">monet.js</a></li>
+							<li> <a href="">barely-functional</a></li>
+							<li><a href="">folktalejs</a></li>
+							<li><a href="">ramda-fantasy</a>(based on Rambda)</li> 
+							<li> <a href="">immutable-ext </a>(based on ImmutableJS)</li>
+							<li><a href="">Fluture</a></li>
+						<p>...</p>
+					</ul>
+				</section>
+
+				</section>
+				<section>
+					<section>
+						<h2>Functor</h2>
+					<p>Any class(or construction function) or a datatype that stores a value and implements “map” method.</p>
+					<pre><code class="hljs" data-trim contenteditable>
+const add1 = (a) => a+1;
+let myArray = new Array(1, 2, 3, 4); //store values
+myArray.map(add1) // -> [2,3,4,5] //applies functions
+					</code></pre>
+					</section>
+					<section>
+						<pre><code class="hljs" data-trim contenteditable>
+const add1 = (a) => a + 1;
+class MyFunctor { //Custom "Functor"
+  constructor(value) {
+    this.val = value;
+  }
+  map(fn) {   
+  //Applies function to this.val + returns new Myfunctor
+   return new Myfunctor(fn(this.val));
+  }
+}
+//temp is a Functor instance that's storing value 1
+let temp = new MyFunctor(1); 
+temp.map(add1) //-> temp allows us to map "add1"
+					</code></pre>
+					</section>
+				</section>
+		<section>
+					<section>
+					<h2>Monads</h2>
+					<p>Monads are classes or constructor functions that store some data and implements “map”, “ap”, “of” and “chain” methods that do something with the stored data as per spec.</p>
+					
+					</section>
+					<section>
+						<pre><code class="hljs" data-trim overflow="visible">
+class Monad {
+    constructor(val) {
+        this.__value = val;
+    }
+    static of(val) {//Monad.of is simpler than "new Monad(val)
+        return new Monad(val);
+    };
+    map(f) {//Applies the function but returns another Monad!
+        return Monad.of(f(this.__value));
+    };
+    join() { // used to get the value out of the Monad
+        return this.__value;
+    };
+    chain(f) {//Helper func that maps and then gets the value out
+        return this.map(f).join();
+    };
+     ap(someOtherMonad) {//Used to deal w/ multiple Monads
+        return someOtherMonad.map(this.__value);
+    }
+}
+					</code></pre>
+					</section>
+				</section>
+				<section>
+					<h2>Conclusion</h2>
+					<p>Functional programming favors:</p>
+					<ul>
+						<li>Pure functions instead of shared state & side effects</li>
+						<li>Immutability over mutable data</li>
+						<li>Function composition over imperative flow control</li>
+						<li>Lots of generic, reusable utilities that use higher order functions to act on many data types instead of methods that only operate on their colocated data</li>
+						<li>Declarative rather than imperative code (what to do, rather than how to do it)</li>
+						<li>Expressions over statements</li>
+						<li>Containers & higher order functions over ad-hoc polymorphism</li>
+					</ul>
+				</section>
+						<section>
+							<h2>Thanks!</h2>
+							<img src="./QUESTIONS.jpg">
+						</section>
+
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
